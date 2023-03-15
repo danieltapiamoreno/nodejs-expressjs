@@ -1,4 +1,5 @@
 const express = require('express');
+const { faker } = require('@faker-js/faker');
 const app = express();
 const port = 5000;
 
@@ -24,6 +25,33 @@ app.get('/categories/:categoryId/products/:productId', (req, res) => {
     categoryId,
     productId,
   });
+});
+
+app.get('/products', (req, res) => {
+  const products = [];
+  const { size: limit = 100 } = req.query;
+
+  for (let index = 0; index < limit; index++) {
+    products.push({
+      name: faker.commerce.productName(),
+      price: faker.commerce.price(),
+      image: faker.image.imageUrl(),
+    });
+  }
+
+  res.json(products);
+});
+
+app.get('/users', (req, res) => {
+  const { limit, offset } = req.query;
+  if (limit && offset) {
+    res.json({
+      limit,
+      offset,
+    });
+  } else {
+    res.send("There're no query params");
+  }
 });
 
 app.listen(port, () => {
