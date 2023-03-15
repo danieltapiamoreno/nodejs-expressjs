@@ -41,4 +41,14 @@ router.post('/', (req, res) => {
   });
 });
 
+router.patch('/:id', (req, res) => {
+  const body = req.body;
+  const { id } = req.params;
+  res.json({
+    message: 'updated',
+    id,
+    data: body,
+  });
+});
+
 module.exports = router;
