@@ -1,5 +1,6 @@
 const express = require('express');
 const { faker } = require('@faker-js/faker');
+const { StatusCodes, ReasonPhrases } = require('http-status-codes');
 
 const router = express.Router();
 
@@ -26,17 +27,23 @@ router.get('/filter', (req, res) => {
 // dynamic enpoint
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-  res.json({
-    id,
-    name: 'Product2',
-    price: 2000,
-  });
+  if (id === String(999)) {
+    res.status(StatusCodes.NOT_FOUND).json({
+      error: ReasonPhrases.NOT_FOUND,
+    });
+  } else {
+    res.status(StatusCodes.OK).json({
+      id,
+      name: 'Product2',
+      price: 2000,
+    });
+  }
 });
 
 router.post('/', (req, res) => {
   const body = req.body;
-  res.json({
-    message: 'Created',
+  res.status(StatusCodes.CREATED).json({
+    message: ReasonPhrases.CREATED,
     data: body,
   });
 });
