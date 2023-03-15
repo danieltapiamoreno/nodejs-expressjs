@@ -42,6 +42,21 @@ app.get('/products', (req, res) => {
   res.json(products);
 });
 
+// specific endpoint before dynamic
+app.get('/products/filter', (req, res) => {
+  res.send("I'm a filter");
+});
+
+// dynamic enpoint
+app.get('/products/:id', (req, res) => {
+  const { id } = req.params;
+  res.json({
+    id,
+    name: 'Product2',
+    price: 2000,
+  });
+});
+
 app.get('/users', (req, res) => {
   const { limit, offset } = req.query;
   if (limit && offset) {
