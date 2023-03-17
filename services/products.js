@@ -7,15 +7,12 @@ class ProductsService {
   }
   generate() {
     const limit = 100;
-
-    for (let index = 0; index < limit; index++) {
-      this.products.push({
-        id: faker.datatype.uuid(),
-        name: faker.commerce.productName(),
-        price: faker.commerce.price(),
-        image: faker.image.imageUrl(),
-      });
-    }
+    this.products = new Array(limit).fill({
+      id: faker.datatype.uuid(),
+      name: faker.commerce.productName(),
+      price: faker.commerce.price(),
+      image: faker.image.imageUrl(),
+    });
   }
   create({ name, price, image }) {
     const product = {
@@ -41,7 +38,7 @@ class ProductsService {
     const product = this.products[index];
     this.products[index] = {
       ...product,
-      ...changes
+      ...changes,
     };
     return this.products[index];
   }
