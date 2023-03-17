@@ -1,21 +1,12 @@
 const express = require('express');
-const { faker } = require('@faker-js/faker');
-const { StatusCodes, ReasonPhrases } = require('http-status-codes');
+const ProductsService = require('../services/products');
+const { StatusCodes } = require('http-status-codes');
 
 const router = express.Router();
+const service = new ProductsService();
 
 router.get('/', (req, res) => {
-  const products = [];
-  const { size: limit = 100 } = req.query;
-
-  for (let index = 0; index < limit; index++) {
-    products.push({
-      name: faker.commerce.productName(),
-      price: faker.commerce.price(),
-      image: faker.image.imageUrl(),
-    });
-  }
-
+  const products = service.find();
   res.json(products);
 });
 
@@ -27,25 +18,14 @@ router.get('/filter', (req, res) => {
 // dynamic enpoint
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-  if (id === String(999)) {
-    res.status(StatusCodes.NOT_FOUND).json({
-      error: ReasonPhrases.NOT_FOUND,
-    });
-  } else {
-    res.status(StatusCodes.OK).json({
-      id,
-      name: 'Product2',
-      price: 2000,
-    });
-  }
+  const product = service.findOne(id);
+  res.status(StatusCodes.OK).json(product);
 });
 
 router.post('/', (req, res) => {
   const body = req.body;
-  res.status(StatusCodes.CREATED).json({
-    message: ReasonPhrases.CREATED,
-    data: body,
-  });
+  const product = service.create(body);
+  res.status(StatusCodes.CREATED).json(product);
 });
 
 router.put('/:id', (req, res) => {
@@ -61,19 +41,14 @@ router.put('/:id', (req, res) => {
 router.patch('/:id', (req, res) => {
   const body = req.body;
   const { id } = req.params;
-  res.json({
-    message: 'updated',
-    id,
-    data: body,
-  });
+  const product = service.update(id, body);
+  res.json(product);
 });
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-  res.json({
-    message: 'deleted',
-    id,
-  });
+  const response = service.delete(id);
+  res.status(StatusCodes.OK).json(response);
 });
 
 module.exports = router;
