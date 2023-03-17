@@ -1,12 +1,12 @@
 const express = require('express');
 const ProductsService = require('../services/products');
-const { StatusCodes } = require('http-status-codes');
+const { StatusCodes, ReasonPhrases } = require('http-status-codes');
 
 const router = express.Router();
 const service = new ProductsService();
 
-router.get('/', (req, res) => {
-  const products = service.find();
+router.get('/', async (req, res) => {
+  const products = await service.find();
   res.json(products);
 });
 
@@ -16,38 +16,34 @@ router.get('/filter', (req, res) => {
 });
 
 // dynamic enpoint
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const product = service.findOne(id);
+  const product = await service.findOne(id);
   res.status(StatusCodes.OK).json(product);
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const body = req.body;
-  const product = service.create(body);
+  const product = await service.create(body);
   res.status(StatusCodes.CREATED).json(product);
 });
 
-router.put('/:id', (req, res) => {
-  const body = req.body;
-  const { id } = req.params;
-  res.json({
-    message: 'updated',
-    data: body,
-    id,
-  });
+router.patch('/:id', async (req, res) => {
+  try {
+    const body = req.body;
+    const { id } = req.params;
+    const product = await service.update(id, body);
+    res.json(product);
+  } catch (error) {
+    res.status(StatusCodes.NOT_FOUND).json({
+      message: error.message
+    })
+  }
 });
 
-router.patch('/:id', (req, res) => {
-  const body = req.body;
+router.delete('/:id', async (req, res) => {
   const { id } = req.params;
-  const product = service.update(id, body);
-  res.json(product);
-});
-
-router.delete('/:id', (req, res) => {
-  const { id } = req.params;
-  const response = service.delete(id);
+  const response = await service.delete(id);
   res.status(StatusCodes.OK).json(response);
 });
 
