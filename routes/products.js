@@ -32,16 +32,14 @@ router.post('/', async (req, res) => {
   res.status(StatusCodes.CREATED).json(product);
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', async (req, res, next) => {
   try {
     const body = req.body;
     const { id } = req.params;
     const product = await service.update(id, body);
     res.json(product);
   } catch (error) {
-    res.status(StatusCodes.NOT_FOUND).json({
-      message: error.message
-    })
+    next(error);
   }
 });
 
