@@ -1,6 +1,6 @@
 const express = require('express');
 const ProductsService = require('../services/products');
-const { StatusCodes, ReasonPhrases } = require('http-status-codes');
+const { StatusCodes } = require('http-status-codes');
 
 const router = express.Router();
 const service = new ProductsService();
@@ -16,10 +16,14 @@ router.get('/filter', (req, res) => {
 });
 
 // dynamic enpoint
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  const product = await service.findOne(id);
-  res.status(StatusCodes.OK).json(product);
+router.get('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await service.findOne(id);
+    res.status(StatusCodes.OK).json(product);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post('/', async (req, res) => {
